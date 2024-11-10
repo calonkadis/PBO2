@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.Vector;
 import java.io.*;
 
-public class PengelolaKontak extends JFrame {
+public class Pengelola_kontak extends JFrame {
     private JPanel panel;
     private JTextField inputNama, inputNomor;
     private JComboBox<String> comboKategori;
@@ -16,15 +16,17 @@ public class PengelolaKontak extends JFrame {
     private Connection conn;
     private PreparedStatement pst;
 
-    public PengelolaKontak() {
+    public Pengelola_kontak() {
         setTitle("Pengelola Kontak");
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
+        // Panel utama
         panel = new JPanel();
         panel.setLayout(new BorderLayout());
 
+        // Panel input
         JPanel inputPanel = new JPanel(new GridLayout(3, 2, 10, 10));
         JLabel labelNama = new JLabel("Nama:");
         JLabel labelNomor = new JLabel("Nomor Telepon:");
@@ -42,6 +44,7 @@ public class PengelolaKontak extends JFrame {
         inputPanel.add(labelKategori);
         inputPanel.add(comboKategori);
 
+        // Panel tombol
         JPanel buttonPanel = new JPanel();
         buttonTambah = new JButton("Tambah");
         buttonEdit = new JButton("Edit");
@@ -59,6 +62,7 @@ public class PengelolaKontak extends JFrame {
         buttonPanel.add(buttonImport);
         buttonPanel.add(buttonKeluar);
 
+        // Table untuk kontak
         tableModel = new DefaultTableModel(new String[] { "ID", "Nama", "Nomor Telepon", "Kategori" }, 0);
         tableKontak = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(tableKontak);
@@ -68,9 +72,12 @@ public class PengelolaKontak extends JFrame {
         panel.add(scrollPane, BorderLayout.SOUTH);
 
         add(panel);
+        setVisible(true); // Menampilkan frame
 
+        // Inisialisasi database
         initDatabase();
 
+        // Event listener untuk tombol
         buttonTambah.addActionListener(e -> tambahKontak());
         buttonEdit.addActionListener(e -> editKontak());
         buttonHapus.addActionListener(e -> hapusKontak());
@@ -90,6 +97,7 @@ public class PengelolaKontak extends JFrame {
             stmt.execute(createTableSQL);
         } catch (SQLException e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Koneksi database gagal: " + e.getMessage());
         }
     }
 
@@ -243,20 +251,13 @@ public class PengelolaKontak extends JFrame {
                 File file = fileChooser.getSelectedFile();
                 BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 
-                for (int i = 0; i < tableModel.getRowCount(); i++) {
-                    StringBuilder row = new StringBuilder();
-                    for (int j = 0; j < tableModel.getColumnCount(); j++) {
-                        row.append(tableModel.getValueAt(i, j).toString());
-                        if (j < tableModel.getColumnCount() - 1) {
-                            row.append(",");
-                        }
-                    }
-                    writer.write(row.toString());
-                    writer.newLine();
+                // Menulis header tabel
+                for (int i = 0; i < tableModel.getColumnCount(); i++) {
+                    writer.write(tableModel.getColumnName(i));
+                    if (i < tableModel.getColumnCount() - 1) writer.write(",");
                 }
-                writer.close();
-                JOptionPane.showMessageDialog(this, "Data berhasil diekspor!");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Ter
+                writer.newLine();
+
+                // Menulis data tabel
+                for (int i = 0; i < tableModel.getRowCount(); i++) {
+                    for (int j = 0; j < tableModel.getColumn

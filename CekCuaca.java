@@ -98,10 +98,13 @@ public class CekCuaca {
             // Mengambil gambar cuaca berdasarkan icon code
             String iconURL = "http://openweathermap.org/img/wn/" + iconCode + "@2x.png";
             try {
-                ImageIcon icon = new ImageIcon(new URL(iconURL));
+                // Membuat URL untuk gambar cuaca
+                URL url = new URL(iconURL);
+                ImageIcon icon = new ImageIcon(url);
                 labelGambarCuaca.setIcon(icon);
             } catch (Exception e) {
                 e.printStackTrace();
+                labelGambarCuaca.setText("Gambar cuaca tidak tersedia.");
             }
         }
     }
